@@ -81,20 +81,47 @@ const inputClosePin = document.querySelector('.form__input--pin');
 /////////////////////////////////////////////////
 // Functions
 
-const displayMovements = function (movements, sort = false) {
+const displayMovements = function (acc, sort = false) {
   containerMovements.innerHTML = '';
+const combineMovsDates=acc.movements.map((mov,i)=>
+                      ({
+movement:mov,
+date:acc.movementsDates.at(i),
 
-  const movs = sort ? movements.slice().sort((a, b) => a - b) : movements;
+}));
+console.log(combineMovsDates);
 
-  movs.forEach(function (mov, i) {
-    const type = mov > 0 ? 'deposit' : 'withdrawal';
+
+
+ // const movs = sort ? acc.movements.slice().sort((a, b) => a - b) : acc.movements;
+
+ if(sort) combineMovsDates.sort((a,b)=> a.movement-b.movement);
+
+ combineMovsDates.forEach(function (obj, i)
+ {
+
+    const {movement,date}=obj;
+    
+    const type = movement > 0 ? 'deposit' : 'withdrawal';
+
+    const d=new Date(date);
+   const year=d.getFullYear()
+ const month=`${d.getMonth()+1}`.padStart(2,0);
+ const da=`${d.getDate()}`.padStart(2,0);
+ const hor=`${d.getHours()}`.padStart(2,0);
+ const min=`${d.getMinutes()}`.padStart(2,0);
+ const sec=d.getSeconds();
+ const displaydate=`${year} /${month} /${da} ${hor}:${min} `;
+
+
 
     const html = `
       <div class="movements__row">
         <div class="movements__type movements__type--${type}">${
       i + 1
     } ${type}</div>
-        <div class="movements__value">${mov}€</div>
+      <div class="movements__date">${date}</div>
+        <div class="movements__value">${movement.toFixed(2)}€</div>
       </div>
     `;
 
@@ -104,19 +131,19 @@ const displayMovements = function (movements, sort = false) {
 
 const calcDisplayBalance = function (acc) {
   acc.balance = acc.movements.reduce((acc, mov) => acc + mov, 0);
-  labelBalance.textContent = `${acc.balance}€`;
+  labelBalance.textContent = `${acc.balance.toFixed(2)}€`;
 };
 
 const calcDisplaySummary = function (acc) {
   const incomes = acc.movements
     .filter(mov => mov > 0)
     .reduce((acc, mov) => acc + mov, 0);
-  labelSumIn.textContent = `${incomes}€`;
+  labelSumIn.textContent = `${incomes.toFixed(2)}€`;
 
   const out = acc.movements
     .filter(mov => mov < 0)
     .reduce((acc, mov) => acc + mov, 0);
-  labelSumOut.textContent = `${Math.abs(out)}€`;
+  labelSumOut.textContent = `${Math.abs(out).toFixed(2)}€`;
 
   const interest = acc.movements
     .filter(mov => mov > 0)
@@ -126,7 +153,7 @@ const calcDisplaySummary = function (acc) {
       return int >= 1;
     })
     .reduce((acc, int) => acc + int, 0);
-  labelSumInterest.textContent = `${interest}€`;
+  labelSumInterest.textContent = `${interest.toFixed(2)}€`;
 };
 
 const createUsernames = function (accs) {
@@ -142,7 +169,7 @@ createUsernames(accounts);
 
 const updateUI = function (acc) {
   // Display movements
-  displayMovements(acc.movements);
+  displayMovements(acc);
 
   // Display balance
   calcDisplayBalance(acc);
@@ -170,6 +197,20 @@ btnLogin.addEventListener('click', function (e) {
       currentAccount.owner.split(' ')[0]
     }`;
     containerApp.style.opacity = 100;
+    //ADD TIME AND DATE HERE 
+    const n=new Date();
+ const year=n.getFullYear()
+ const month=`${n.getMonth()+1}`.padStart(2,0);
+ const da=`${n.getDate()}`.padStart(2,0);
+ const hor=`${n.getHours()}`.padStart(2,0);
+ const min=`${n.getMinutes()}`.padStart(2,0);
+ const sec=n.getSeconds();
+labelDate.textContent=`${year} /${month} /${da} , ${hor}:${min}`;
+
+
+
+
+
 
     // Clear input fields
     inputLoginUsername.value = inputLoginPin.value = '';
@@ -197,6 +238,13 @@ btnTransfer.addEventListener('click', function (e) {
     // Doing the transfer
     currentAccount.movements.push(-amount);
     receiverAcc.movements.push(amount);
+    //ADD TRANSFER DATE 
+
+    currentAccount.movementsDates.push( new Date().toISOString());
+    receiverAcc.movementsDates.push(new Date().toISOString());
+
+
+
 
     // Update UI
     updateUI(currentAccount);
@@ -206,11 +254,14 @@ btnTransfer.addEventListener('click', function (e) {
 btnLoan.addEventListener('click', function (e) {
   e.preventDefault();
 
-  const amount = Number(inputLoanAmount.value);
+  const amount = Math.floor(inputLoanAmount.value);
 
   if (amount > 0 && currentAccount.movements.some(mov => mov >= amount * 0.1)) {
     // Add movement
     currentAccount.movements.push(amount);
+
+    //ADD LOAN DATE
+    currentAccount.movementsDates.push( new Date().toISOString());
 
     // Update UI
     updateUI(currentAccount);
@@ -223,7 +274,7 @@ btnClose.addEventListener('click', function (e) {
 
   if (
     inputCloseUsername.value === currentAccount.username &&
-    Number(inputClosePin.value) === currentAccount.pin
+    +(inputClosePin.value) === currentAccount.pin
   ) {
     const index = accounts.findIndex(
       acc => acc.username === currentAccount.username
@@ -242,12 +293,202 @@ btnClose.addEventListener('click', function (e) {
 });
 
 let sorted = false;
+
 btnSort.addEventListener('click', function (e) {
+
   e.preventDefault();
-  displayMovements(currentAccount.movements, !sorted);
+  displayMovements(currentAccount, !sorted);
+
   sorted = !sorted;
 });
 
 /////////////////////////////////////////////////
 /////////////////////////////////////////////////
 // LECTURES
+
+
+/**181 Converting and checking number */
+
+//BASE 10- 0 TO 9
+//Binar base 2 - 0 1
+
+console.log(23==23.0);
+console.log(+'234');
+
+// parsing
+
+
+console.log(Number.parseInt('45x',10));
+
+console.log(Number.parseInt('e45',10));
+
+//PARSEINT AND PARSEFLOAT ARE GOLBAL FUNCTION 
+//NUMBER CALLED NAMESPACE
+console.log(Number.parseFloat('2.5rem'));
+console.log(Number.parseInt('2.5rem'));
+//CHECK IF THE VALUE IS NAN 
+console.log(Number.isNaN(2));
+//THIS IS NOT A NUMBER
+console.log(Number.isNaN(+'20x'));
+
+//checking if values is Numvber with finite number
+console.log(Number.isFinite(20));
+
+
+
+//**** 182 Math and rounding 
+//*/ 
+
+console.log(Math.sqrt(25));
+
+console.log(25**(1/2));
+
+console.log(Math.max(5,18,23,11,2));
+console.log(Math.min(5,18,23,11,2));
+//AREA OF CIRCLE
+console.log(Math.PI*Number.parseFloat('10px')**2);
+
+//random 
+
+console.log(Math.trunc(Math.random()*6)+1)
+//
+
+const randomInt=(min,max)=>Math.floor(Math.random()*(max-min+1))+min;
+
+
+
+
+
+
+console.log(randomInt(0,2));
+
+
+//ROUNDING INTEGERS
+
+console.log(Math.trunc(23.4))
+console.log(Math.round(23.9))
+console.log(Math.round(23.1))
+console.log(Math.ceil(23.9))
+console.log(Math.ceil(23.1))
+console.log(Math.floor(23.9))
+console.log(Math.floor(23.1))
+console.log(Math.trunc(-23.4))
+console.log(Math.floor(-23.1))
+
+
+//ROUNDING DECIMAL
+//TOFIX RETURN STRING NOT NUMBER
+console.log((2.49).toFixed(0))
+
+
+
+//**183 REMINDER OPERATOR */
+
+console.log(5%2);
+
+//to check 
+const isEven=n=>n%2==0;
+console.log(isEven(4));
+
+//WE WILL SELECT ALL THE ROWS OD
+//CALL SPREAD OPERATOR TO CREATE NEW ARRAY
+
+
+labelBalance.addEventListener('click',function()
+{
+[...document.querySelectorAll('.movements__row')].forEach(function(row,i)
+{
+//0,2,4,6
+if(i%2===0) row.style.backgroundColor='orangered';
+
+//0,3,6,9
+if(i%3===0) row.style.backgroundColor='blue';
+
+
+
+
+})
+
+})
+
+
+// 184 NUMBERIC SEPARATOR
+//287 765 888
+//287 460 000 000 
+const diameter=287_460_000_000;
+
+console.log(diameter);
+
+const price=123_321;
+console.log(price);
+const PI=3.1415;
+
+
+//** 185 Working with BigInt */
+
+console.log(2**53-1);
+console.log(Number.MAX_SAFE_INTEGER)
+//bigInt make save Large 
+console.log(BigInt(65464645644546));
+//*** CREATE DATES  */
+
+//CREATE DATE 
+//THERE ARE FOUR WAYS
+
+const now=new Date();
+
+console.log(now);
+
+console.log( new Date('2019-11-01T13:15:33.035Z'));
+console.log( new Date('december 24'));
+
+
+console.log( new Date( account1.movementsDates[0]));
+console.log( new Date(2037,10,19,15,32,15));
+
+console.log( new Date(0));
+//3 days later aftrer the UTC
+console.log( new Date(3*24*60*60*1000));
+
+
+
+//working with dates
+
+
+const future= new Date(2037,10,19,15,23);
+console.log(future);
+console.log(future.getFullYear());
+console.log(future.getMonth());
+console.log(future.getDate());
+console.log(future.getDay());
+console.log(future.getHours());
+console.log(future.getMinutes());
+console.log(future.getSeconds());
+console.log(future.toISOString());
+//RETURN THE SECOND PASSED  FROM 1970
+console.log(future.getTime());
+//cureent TIME STAMP
+
+console.log(Date.now());
+
+future.setFullYear(2040);
+console.log(future);
+
+/***187 ADDING DATES TO BANKLIST  */
+
+//FAKE ALWAYS LOG IN
+
+currentAccount=account1;
+updateUI(currentAccount)
+containerApp.style.opacity=100;
+
+const n=new Date();
+ const year=n.getFullYear()
+ const month=`${n.getMonth()+1}`.padStart(2,0);
+ const da=`${n.getDate()}`.padStart(2,0);
+ const hor=n.getHours();
+ const min=n.getMinutes();
+ const sec=n.getSeconds();
+labelDate.textContent=`${year} /${month} /${da} , ${hor}:${min}`;
+
+//year//month//day
