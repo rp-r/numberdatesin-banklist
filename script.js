@@ -85,12 +85,12 @@ const inputClosePin = document.querySelector('.form__input--pin');
 
 
 
-const formatMovementDate=function(date)
+const formatMovementDate=function (date)
 {
-const calcDaysPassed=(date1,date2)=>Math.round(Math.abs(date1-date2)/(1000*60*60*24));
+const calcDaysPassed=(date1,date2)=>Math.round(Math.abs(date2-date1)/(1000*60*60*24));
 
 const dayPassed=calcDaysPassed(new Date(),date);
-
+console.log(dayPassed);
 if(dayPassed===0) return  `Today`;
 if(dayPassed===1) return `Yesterday`;
 if(dayPassed<=7) return `${dayPassed} days ago`;
@@ -99,12 +99,12 @@ else
 
  {
   const year=date.getFullYear()
-   const month=`${date.getMonth()+1}`.padStart(2,0);
+  const month=`${date.getMonth()+1}`.padStart(2,0);
  const da=`${date.getDate()}`.padStart(2,0);
  const hor=`${date.getHours()}`.padStart(2,0);
  const min=`${date.getMinutes()}`.padStart(2,0);
  const sec=date.getSeconds();
- return `${year} /${month} /${da}`;
+ return `${year}/${month}/${da}`;
 }
 
 
@@ -135,12 +135,12 @@ console.log(combineMovsDates);
 
     const d=new Date(date);
     const displaydate=formatMovementDate(d);
-    const year=d.getFullYear()
- const month=`${d.getMonth()+1}`.padStart(2,0);
- const da=`${d.getDate()}`.padStart(2,0);
- const hor=`${d.getHours()}`.padStart(2,0);
- const min=`${d.getMinutes()}`.padStart(2,0);
- const sec=d.getSeconds();
+   // const year=d.getFullYear()
+ //const month=`${d.getMonth()+1}`.padStart(2,0);
+// const da=`${d.getDate()}`.padStart(2,0);
+ //const hor=`${d.getHours()}`.padStart(2,0);
+ //const min=`${d.getMinutes()}`.padStart(2,0);
+ //const sec=d.getSeconds();
  //const displaydate=`${year} /${month} /${da} ${hor}:${min} `;
 
 
@@ -149,7 +149,7 @@ console.log(combineMovsDates);
         <div class="movements__type movements__type--${type}">${
       i + 1
     } ${type}</div>
-      <div class="movements__date">${date}</div>
+      <div class="movements__date">${displaydate}</div>
         <div class="movements__value">${movement.toFixed(2)}€</div>
       </div>
     `;
@@ -528,3 +528,21 @@ labelDate.textContent=`${year} /${month} /${da} , ${hor}:${min}`;
 const calDay=(d1,d2)=>Math.abs(d1-d2)/(1000*60*60*24);
 
 console.log(calDay(new Date(2025,12,3), new Date(2025,11,4)))
+
+/**** 190 Internationalizing Dates (INT) */
+
+//formating dates 
+const checkInt=new Date();
+const options=
+{
+  hour:'numeric',
+  minute:'numeric',
+  day:'numeric',
+  month:'long',
+  year:'numeric',
+  weekday:'long'
+}
+labelDate.textContent= new Intl.DateTimeFormat(currentAccount.locale,options).format(checkInt);
+
+const local =navigator.language;
+console.log(local);
