@@ -26,7 +26,7 @@ const account1 = {
     '2026-02-11T10:51:36.790Z',
   ],
   currency: 'EUR',
-  locale: 'pt-PT', // de-DE
+  locale: 'sv-SE', // de-DE sv-SE pt-PT
 };
 
 const account2 = {
@@ -85,7 +85,7 @@ const inputClosePin = document.querySelector('.form__input--pin');
 
 
 
-const formatMovementDate=function (date)
+const formatMovementDate=function (date,locale)
 {
 const calcDaysPassed=(date1,date2)=>Math.round(Math.abs(date2-date1)/(1000*60*60*24));
 
@@ -98,13 +98,17 @@ if(dayPassed<=7) return `${dayPassed} days ago`;
 else
 
  {
-  const year=date.getFullYear()
+  /*const year=date.getFullYear()
   const month=`${date.getMonth()+1}`.padStart(2,0);
  const da=`${date.getDate()}`.padStart(2,0);
  const hor=`${date.getHours()}`.padStart(2,0);
  const min=`${date.getMinutes()}`.padStart(2,0);
  const sec=date.getSeconds();
  return `${year}/${month}/${da}`;
+ */
+
+ return new Intl.DateTimeFormat(locale).format(date)
+ 
 }
 
 
@@ -134,7 +138,7 @@ console.log(combineMovsDates);
     const type = movement > 0 ? 'deposit' : 'withdrawal';
 
     const d=new Date(date);
-    const displaydate=formatMovementDate(d);
+    const displaydate=formatMovementDate(d,acc.locale);
    // const year=d.getFullYear()
  //const month=`${d.getMonth()+1}`.padStart(2,0);
 // const da=`${d.getDate()}`.padStart(2,0);
@@ -209,6 +213,11 @@ const updateUI = function (acc) {
 
 ///////////////////////////////////////
 // Event handlers
+
+//LOGIN DATE ///////
+
+
+
 let currentAccount;
 
 btnLogin.addEventListener('click', function (e) {
@@ -227,6 +236,17 @@ btnLogin.addEventListener('click', function (e) {
     containerApp.style.opacity = 100;
     //ADD TIME AND DATE HERE 
     const n=new Date();
+const options=
+{
+  hour:'numeric',
+  minute:'numeric',
+  day:'numeric',
+  month:'numeric',
+  year:'numeric',
+  //weekday:'long'
+}
+labelDate.textContent= new Intl.DateTimeFormat(currentAccount.locale,options).format(n);
+ /*   
  const year=n.getFullYear()
  const month=`${n.getMonth()+1}`.padStart(2,0);
  const da=`${n.getDate()}`.padStart(2,0);
@@ -236,7 +256,7 @@ btnLogin.addEventListener('click', function (e) {
 labelDate.textContent=`${year} /${month} /${da} , ${hor}:${min}`;
 
 
-
+*/
 
 
 
@@ -248,6 +268,12 @@ labelDate.textContent=`${year} /${month} /${da} , ${hor}:${min}`;
     updateUI(currentAccount);
   }
 });
+
+
+
+
+
+
 
 btnTransfer.addEventListener('click', function (e) {
   e.preventDefault();
@@ -533,6 +559,10 @@ console.log(calDay(new Date(2025,12,3), new Date(2025,11,4)))
 
 //formating dates 
 const checkInt=new Date();
+
+//provide option object ¨
+//SET PROPERTIES OF DAY MONTH AND YEAR
+//month long or 2-digit or short or narrow
 const options=
 {
   hour:'numeric',
@@ -543,6 +573,17 @@ const options=
   weekday:'long'
 }
 labelDate.textContent= new Intl.DateTimeFormat(currentAccount.locale,options).format(checkInt);
+//TAKE FORM USER BROWSER
 
 const local =navigator.language;
 console.log(local);
+
+
+console.log("2026-02-16");
+const fut=new Date(2037,10,19,15,23);
+const fut1=new Date(2037,11,29,15,23);
+
+console.log(Math.floor(Math.abs((Number(fut)-Number(fut1))/(1000*60*60*24))))
+
+
+//*** */
