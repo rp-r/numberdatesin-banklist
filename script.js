@@ -83,7 +83,15 @@ const inputClosePin = document.querySelector('.form__input--pin');
 
 
 
+//CREATEÍNG NEW FNCTION FOR FORMATING CURRENCY
+const formatcurr= function(value,local,currency){
+  return new Intl.NumberFormat(local,{
+    style:'currency',
+    currency:currency,
+  }).format(value)
 
+  
+}
 
 const formatMovementDate=function (date,locale)
 {
@@ -146,15 +154,23 @@ console.log(combineMovsDates);
  //const min=`${d.getMinutes()}`.padStart(2,0);
  //const sec=d.getSeconds();
  //const displaydate=`${year} /${month} /${da} ${hor}:${min} `;
+ const formatted= new Intl.NumberFormat
+ (acc.locale,{style:'currency',
+  currency:acc.currency
+ }).format(movement)
+
+ const formatcurrency=formatcurr(movement,acc.local,acc.currency)
 
 
+
+//${movement.toFixed(2)}
     const html = `
       <div class="movements__row">
         <div class="movements__type movements__type--${type}">${
       i + 1
     } ${type}</div>
       <div class="movements__date">${displaydate}</div>
-        <div class="movements__value">${movement.toFixed(2)}€</div>
+        <div class="movements__value">${formatcurrency}</div>
       </div>
     `;
 
@@ -164,19 +180,24 @@ console.log(combineMovsDates);
 
 const calcDisplayBalance = function (acc) {
   acc.balance = acc.movements.reduce((acc, mov) => acc + mov, 0);
-  labelBalance.textContent = `${acc.balance.toFixed(2)}€`;
+const formatedbalance=formatcurr(acc.balance,acc.local,acc.currency)
+
+  //labelBalance.textContent = `${acc.balance.toFixed(2)}€`;
+  labelBalance.textContent = `${formatedbalance}`;
 };
 
 const calcDisplaySummary = function (acc) {
   const incomes = acc.movements
     .filter(mov => mov > 0)
     .reduce((acc, mov) => acc + mov, 0);
-  labelSumIn.textContent = `${incomes.toFixed(2)}€`;
 
+  //labelSumIn.textContent = `${incomes.toFixed(2)}€`;
+labelSumIn.textContent=formatcurr(incomes,acc.local,acc.currency);
   const out = acc.movements
     .filter(mov => mov < 0)
     .reduce((acc, mov) => acc + mov, 0);
-  labelSumOut.textContent = `${Math.abs(out).toFixed(2)}€`;
+  //labelSumOut.textContent = `${Math.abs(out).toFixed(2)}€`;
+    labelSumOut.textContent = formatcurr(Math.abs(out),acc.local,acc.currency);
 
   const interest = acc.movements
     .filter(mov => mov > 0)
@@ -186,7 +207,8 @@ const calcDisplaySummary = function (acc) {
       return int >= 1;
     })
     .reduce((acc, int) => acc + int, 0);
-  labelSumInterest.textContent = `${interest.toFixed(2)}€`;
+  //labelSumInterest.textContent = `${interest.toFixed(2)}€`;
+    labelSumInterest.textContent = formatcurr(interest,acc.local,acc.currency);1
 };
 
 const createUsernames = function (accs) {
@@ -312,13 +334,19 @@ btnLoan.addEventListener('click', function (e) {
 
   if (amount > 0 && currentAccount.movements.some(mov => mov >= amount * 0.1)) {
     // Add movement
-    currentAccount.movements.push(amount);
+    //ADD SET TIME OUTER IN THE FUNCTION 
+    setTimeout( function(){
+        currentAccount.movements.push(amount);
 
     //ADD LOAN DATE
     currentAccount.movementsDates.push( new Date().toISOString());
 
     // Update UI
     updateUI(currentAccount);
+
+    },2500)
+
+  
   }
   inputLoanAmount.value = '';
 });
@@ -586,4 +614,49 @@ const fut1=new Date(2037,11,29,15,23);
 console.log(Math.floor(Math.abs((Number(fut)-Number(fut1))/(1000*60*60*24))))
 
 
-//*** */
+//*191 inyternationalizing Number** */
+
+console.log("191 inyternationalizing Number");
+const num=3884476.23
+ const options1=
+ {
+//style:'curreny',
+//unit:'celsius',
+currency:'EUR'
+
+ };
+
+//console.log('US: ',new Intl.NumberFormat('en-US',options1).format(num));
+console.log('SE: ',new Intl.NumberFormat('sv-SE',options1).format(num));
+console.log('Syria: ',new Intl.NumberFormat('ar-SY',options1).format(num));
+console.log(navigator.language,new Intl.NumberFormat(navigator.language,options1).format(num))
+
+
+
+///****192  TIMEers   */
+// call after millisecond
+console.log("192 set timer")
+// DISPLAY AFTER 3 SECOND
+//CALL BACK FUNCTION
+//'olivies' spencac
+ 
+//WE ADD INGREDIENTS BY USING SPREAD OPERATOR 
+const ingredients=['','spinach']
+
+
+const setPizzatimeouter=
+setTimeout((ing1,ing2)=>console.log(`Here is the pizza 🍕 with ${ing1} and ${ing2}`),3000,...ingredients);
+
+if(ingredients.includes('oliver') )clearTimeout(setPizzatimeouter);
+
+console.log('waiting....');
+
+
+//IF SOMEBODY CALL FUNCTION OVER AND OVER
+//settimeout
+
+setInterval(function()
+{
+  const now= new Date();
+  console.log(`${now.getHours()}:${now.getMinutes()}:${now.getSeconds()}`)
+},1000);
