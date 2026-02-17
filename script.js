@@ -81,7 +81,39 @@ const inputClosePin = document.querySelector('.form__input--pin');
 /////////////////////////////////////////////////
 // Functions
 
+const startLogOutTimer= function()
+{
+ // SET TIME TO 5 MINUTES
+    let settime=120;
+//CALL THE TIME EVERY SECOND
+    const tick=function() {
+    const min=String(Math.trunc(settime/60)).padStart(2,0);
+    const sec=String(settime %60).padStart(2,0);
 
+    labelTimer.textContent=`${min}:${sec}`;
+    
+
+    if(settime === 0)
+    {
+    clearInterval(timer)
+    labelWelcome.textContent ='Log in to get started'; 
+     containerApp.style.opacity = 0;
+    }
+settime--;
+
+  }
+
+
+
+
+  tick();
+
+    const timer=setInterval(tick, 1000);
+
+    return timer;
+  // IN EACH CALL , PRINT THE REMAINING TIME TO UI
+  //WHEN TIME IS ZERO ,STOP TIMER AND LOG OUT USER
+}
 
 //CREATEÍNG NEW FNCTION FOR FORMATING CURRENCY
 const formatcurr= function(value,local,currency){
@@ -240,13 +272,13 @@ const updateUI = function (acc) {
 
 
 
-let currentAccount;
+let currentAccount,timer;
 
 btnLogin.addEventListener('click', function (e) {
   // Prevent form from submitting
   e.preventDefault();
   currentAccount = accounts.find(
-    acc => acc.username === inputLoginUsername.value
+   acc => acc.username === inputLoginUsername.value
   );
   console.log(currentAccount);
 
@@ -286,8 +318,15 @@ labelDate.textContent=`${year} /${month} /${da} , ${hor}:${min}`;
     inputLoginUsername.value = inputLoginPin.value = '';
     inputLoginPin.blur();
 
+if(timer) clearInterval(timer);
+
+   timer=startLogOutTimer();
+
     // Update UI
     updateUI(currentAccount);
+    //RESET TIMER
+    clearInterval(timer);
+    timer=startLogOutTimer();
   }
 });
 
@@ -560,9 +599,11 @@ console.log(future);
 
 //FAKE ALWAYS LOG IN
 
-currentAccount=account1;
-updateUI(currentAccount)
-containerApp.style.opacity=100;
+//currentAccount=account1;
+//updateUI(currentAccount)
+//containerApp.style.opacity=100;
+
+
 
 const n=new Date();
  const year=n.getFullYear()
@@ -600,7 +641,7 @@ const options=
   year:'numeric',
   weekday:'long'
 }
-labelDate.textContent= new Intl.DateTimeFormat(currentAccount.locale,options).format(checkInt);
+//labelDate.textContent= new Intl.DateTimeFormat(currentAccount.locale,options).format(checkInt);
 //TAKE FORM USER BROWSER
 
 const local =navigator.language;
@@ -654,9 +695,14 @@ console.log('waiting....');
 
 //IF SOMEBODY CALL FUNCTION OVER AND OVER
 //settimeout
-
-setInterval(function()
-{
+/*
+setInterval(function(){
   const now= new Date();
   console.log(`${now.getHours()}:${now.getMinutes()}:${now.getSeconds()}`)
 },1000);
+
+*/
+
+
+/** 193 IMPLEMENTING A COUNTDOWN TIMER */
+
